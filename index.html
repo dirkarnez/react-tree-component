@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,18 +15,91 @@
 </head>
 <body>
     <div id="app"></div>
-    <script type="text/babel" src="./loaded-component.js"></script>
 	
     <script type="text/babel">
-      function Application() {
-        return (
-          <div className="myDiv">
-            <h2>This is a heading in a div element</h2>
-            <p>This is some text in a div element.</p>
-          </div>
-        )
-      }
-	  ReactDOM.createRoot(document.getElementById('app')).render(<LoadedComponent />);
+    
+    const Folder = ({ name, files }) => {
+      const [expanded, setExpanded] = React.useState(false);
+
+      const toggle = () => {
+        setExpanded(!expanded);
+      };
+
+      return (
+        <div>
+          <button className={expanded ? 'expanded' : ''} onClick={toggle}>
+            {name}
+          </button>
+          {expanded && (
+            <ul>
+              {files.map((file, index) => (
+                <li key={index}>
+                  {file.type === 'folder' ? (
+                    <Folder {...file} />
+                  ) : (
+                    <File {...file} />
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        
+        </div>
+      );
+    };
+    
+    const File = ({ name }) => {
+      const type = name.slice(name.lastIndexOf('.') + 1);
+
+      return (
+        <span style={{ backgroundImage: `url(/tutorial/icons/${type}.svg)` }}>
+          {name}
+        </span>
+      );
+    };
+
+
+
+const root = [
+  {
+    type: 'folder',
+    name: 'Important work stuff',
+    files: [{ type: 'file', name: 'quarterly-results.xlsx' }]
+  },
+  {
+    type: 'folder',
+    name: 'Animal GIFs',
+    files: [
+      {
+        type: 'folder',
+        name: 'Dogs',
+        files: [
+          { type: 'file', name: 'treadmill.gif' },
+          { type: 'file', name: 'rope-jumping.gif' }
+        ]
+      },
+      {
+        type: 'folder',
+        name: 'Goats',
+        files: [
+          { type: 'file', name: 'parkour.gif' },
+          { type: 'file', name: 'rampage.gif' }
+        ]
+      },
+      { type: 'file', name: 'cat-roomba.gif' },
+      { type: 'file', name: 'duck-shuffle.gif' },
+      { type: 'file', name: 'monkey-on-a-pig.gif' }
+    ]
+  },
+  { type: 'file', name: 'TODO.md' }
+];
+
+const App = () => {
+  return <Folder name="Home" files={root} />;
+};
+
+
+	  ReactDOM.createRoot(document.getElementById('app')).render(<App />);
     </script>
     <script src="https://unpkg.com/react@18.1.0/umd/react.development.js"></script>
     <!-- https://unpkg.com/react@18.2.0/umd/react.production.min.js -->
