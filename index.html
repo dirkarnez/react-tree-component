@@ -4,12 +4,38 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap-reboot.min.css" rel="stylesheet">
+	<!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap-reboot.min.css" rel="stylesheet">
+    -->
 	<style>
-	.myDiv {
-		border: 5px outset red;
-		background-color: lightblue;    
-		text-align: center;
+	button {
+		padding: 0 0 0 1.5em;
+		background: url(https://svelte.dev/tutorial/icons/folder.svg) 0 0.1em no-repeat;
+		background-size: 1em 1em;
+		font-weight: bold;
+		cursor: pointer;
+		border: none;
+		font-size: 14px;
+	}
+
+	button.expanded {
+		background-image: url(https://svelte.dev/tutorial/icons/folder-open.svg);
+	}
+
+	ul {
+		padding: 0.2em 0 0 0.5em;
+		margin: 0 0 0 0.5em;
+		list-style: none;
+		border-left: 1px solid #eee;
+	}
+
+	li {
+		padding: 0.2em 0;
+	}
+    
+    span.file {
+		padding: 0 0 0 1.5em;
+		background: 0 0.1em no-repeat;
+		background-size: 1em 1em;
 	}
 	</style>
 </head>
@@ -52,7 +78,7 @@
       const type = name.slice(name.lastIndexOf('.') + 1);
 
       return (
-        <span style={{ backgroundImage: `url(/tutorial/icons/${type}.svg)` }}>
+        <span class="file" style={{ backgroundImage: `url(https://svelte.dev/tutorial/icons/${type}.svg)` }}>
           {name}
         </span>
       );
@@ -60,46 +86,45 @@
 
 
 
-const root = [
-  {
-    type: 'folder',
-    name: 'Important work stuff',
-    files: [{ type: 'file', name: 'quarterly-results.xlsx' }]
-  },
-  {
-    type: 'folder',
-    name: 'Animal GIFs',
-    files: [
-      {
-        type: 'folder',
-        name: 'Dogs',
-        files: [
-          { type: 'file', name: 'treadmill.gif' },
-          { type: 'file', name: 'rope-jumping.gif' }
-        ]
-      },
-      {
-        type: 'folder',
-        name: 'Goats',
-        files: [
-          { type: 'file', name: 'parkour.gif' },
-          { type: 'file', name: 'rampage.gif' }
-        ]
-      },
-      { type: 'file', name: 'cat-roomba.gif' },
-      { type: 'file', name: 'duck-shuffle.gif' },
-      { type: 'file', name: 'monkey-on-a-pig.gif' }
-    ]
-  },
-  { type: 'file', name: 'TODO.md' }
-];
-
-const App = () => {
-  return <Folder name="Home" files={root} />;
-};
-
-
-	  ReactDOM.createRoot(document.getElementById('app')).render(<App />);
+	const root = [
+	  {
+	    type: 'folder',
+	    name: 'Important work stuff',
+	    files: [{ type: 'file', name: 'quarterly-results.xlsx' }]
+	  },
+	  {
+	    type: 'folder',
+	    name: 'Animal GIFs',
+	    files: [
+	      {
+		type: 'folder',
+		name: 'Dogs',
+		files: [
+		  { type: 'file', name: 'treadmill.gif' },
+		  { type: 'file', name: 'rope-jumping.gif' }
+		]
+	      },
+	      {
+		type: 'folder',
+		name: 'Goats',
+		files: [
+		  { type: 'file', name: 'parkour.gif' },
+		  { type: 'file', name: 'rampage.gif' }
+		]
+	      },
+	      { type: 'file', name: 'cat-roomba.gif' },
+	      { type: 'file', name: 'duck-shuffle.gif' },
+	      { type: 'file', name: 'monkey-on-a-pig.gif' }
+	    ]
+	  },
+	  { type: 'file', name: 'TODO.md' }
+	];
+	
+	const App = () => {
+	  return <Folder name="Home" files={root} />;
+	};
+	
+	ReactDOM.createRoot(document.getElementById('app')).render(<App />);
     </script>
     <script src="https://unpkg.com/react@18.1.0/umd/react.development.js"></script>
     <!-- https://unpkg.com/react@18.2.0/umd/react.production.min.js -->
