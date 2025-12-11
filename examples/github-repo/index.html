@@ -1,36 +1,215 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap-reboot.min.css" rel="stylesheet">
+    -->
+	<style>
+	button {
+		padding: 0 0 0 1.5em;
+		background: url(https://svelte.dev/tutorial/icons/folder.svg) 0 0.1em no-repeat;
+		background-size: 1em 1em;
+		font-weight: bold;
+		cursor: pointer;
+		border: none;
+		font-size: 14px;
+	}
 
-<script>
-  const data = JSON.parse(`{
-  "sha": "",
-  "url": "",
-  "tree": [
-    {
-      "path": ".github",
-      "type": "tree",
-      "sha": ""
-    },
-    {
-      "path": ".github/workflows",
-      "type": "tree",
-      "sha": ""
-    },
-    {
-      "path": ".github/workflows/sync-to-azure.yml",
-      "type": "blob",
-      "sha": ""
-    },
-    {
-      "path": ".github/workflows/sync-to-bitbucket.yml",
-      "type": "blob",
-      "sha": ""
-    },
-    {
-      "path": "README.md",
-      "type": "blob",
-      "sha": ""
-    }
-  ],
-  "truncated": false
-}`)
-</script>
+	button.expanded {
+		background-image: url(https://svelte.dev/tutorial/icons/folder-open.svg);
+	}
+
+	ul {
+		padding: 0.2em 0 0 0.5em;
+		margin: 0 0 0 0.5em;
+		list-style: none;
+		border-left: 1px solid #eee;
+	}
+
+	li {
+		padding: 0.2em 0;
+	}
+    
+    span.file {
+		padding: 0 0 0 1.5em;
+		background: 0 0.1em no-repeat;
+		background-size: 1em 1em;
+	}
+	</style>
+</head>
+<body>
+    <div id="app"></div>
+	
+    <script type="text/babel">
+		function getChildren(list, id, idGetter, parentGetter, isRoot) {
+			const res = [];
+
+			for (let i in list) {
+				const item = list[i];
+				const itemId = idGetter(item);
+				const itemParent = parentGetter(item);
+
+				if (!item || '[object Object]' !== item.toString()) continue;
+
+				if (isRoot && !itemId && !itemParent) {
+					res.push(item);
+					continue;
+				}
+
+				if (itemParent && itemParent !== id || !itemParent && !isRoot) continue;
+
+				if (itemId) {
+					item.children = getChildren(list, itemId, idGetter, parentGetter, false);
+				}
+
+				res.push(item);
+			}
+
+			return res;
+		}
+
+		const listToTree2 = (_list, idGetter, parentGetter) => {
+			if (!Array.isArray(_list)) {
+				throw new Error('First argument must be an array');
+			}
+			return getChildren(JSON.parse(JSON.stringify(_list)), false, idGetter, parentGetter, true);
+		};
+
+
+
+
+
+
+
+
+
+
+
+    
+    const Folder = ({ name, files, isFolder, path }) => {
+      const [expanded, setExpanded] = React.useState(false);
+
+      const toggle = () => {
+        setExpanded(!expanded);
+      };
+
+      return (
+        <div>
+          <button className={expanded ? 'expanded' : ''} onClick={toggle}>
+            {name}
+          </button>
+          {expanded && (
+            <ul>
+              {files.map((file, index) => (
+                <li key={index}>
+				  {
+					isFolder(file) ? 
+					(
+                    	<Folder name={file.path} {...file} files={file.children}  isFolder={isFolder}/>
+					) : (
+						<File name={file.path} {...file} />
+					)
+				  }
+                </li>
+              ))}
+            </ul>
+          )}
+        
+        </div>
+      );
+    };
+    
+    const File = ({name}) => {
+      // const type = name.slice(name.lastIndexOf('.') + 1);
+	  const fileExtension = "md";
+      return (
+        <span className="file" style={{ backgroundImage: `url(https://svelte.dev/tutorial/icons/${fileExtension}.svg)` }}>
+          {name}
+        </span>
+      );
+    };
+
+	const root = [
+	  {
+	    type: 'folder',
+	    name: 'Important work stuff',
+	    files: [{ type: 'file', name: 'quarterly-results.xlsx' }]
+	  },
+	  {
+	    type: 'folder',
+	    name: 'Animal GIFs',
+	    files: [
+	      {
+		type: 'folder',
+		name: 'Dogs',
+		files: [
+		  { type: 'file', name: 'treadmill.gif' },
+		  { type: 'file', name: 'rope-jumping.gif' }
+		]
+	      },
+	      {
+		type: 'folder',
+		name: 'Goats',
+		files: [
+		  { type: 'file', name: 'parkour.gif' },
+		  { type: 'file', name: 'rampage.gif' }
+		]
+	      },
+	      { type: 'file', name: 'cat-roomba.gif' },
+	      { type: 'file', name: 'duck-shuffle.gif' },
+	      { type: 'file', name: 'monkey-on-a-pig.gif' }
+	    ]
+	  },
+	  { type: 'file', name: 'TODO.md' }
+	];
+
+	const data = JSON.parse(`{
+		"sha": "",
+		"url": "",
+		"tree": [
+			{
+			"path": ".github",
+			"type": "tree",
+			"sha": "sha1"
+			},
+			{
+			"path": ".github/workflows",
+			"type": "tree",
+			"sha": "sha2"
+			},
+			{
+			"path": ".github/workflows/sync-to-azure.yml",
+			"type": "blob",
+			"sha": "sha3"
+			},
+			{
+			"path": ".github/workflows/sync-to-bitbucket.yml",
+			"type": "blob",
+			"sha": "sha4"
+			},
+			{
+			"path": "README.md",
+			"type": "blob",
+			"sha": "sha5"
+			}
+		],
+		"truncated": false
+		}`)
+	
+	const App = () => {
+		const a = listToTree2(data.tree, element => element.path, element => element.path.substring(0, element.path.lastIndexOf("/")));
+		debugger;
+		return <Folder name="Home" files={a} isFolder={ element => element.type == "tree" }/>;
+	};
+	
+	ReactDOM.createRoot(document.getElementById('app')).render(<App />);
+    </script>
+    <script src="https://unpkg.com/react@18.1.0/umd/react.development.js"></script>
+    <!-- https://unpkg.com/react@18.2.0/umd/react.production.min.js -->
+    <script src="https://unpkg.com/react-dom@18.1.0/umd/react-dom.development.js"></script>
+    <!-- https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js -->
+    <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
+</body>
+</html>
